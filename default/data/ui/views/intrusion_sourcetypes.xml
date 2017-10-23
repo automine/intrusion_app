@@ -1,0 +1,68 @@
+<form>
+  <label>Intrusion Sourcetypes</label>
+  <fieldset submitButton="true">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="ids_type">
+      <label>IDS Types</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <valuePrefix>IDS_Attacks.ids_type="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+      <fieldForLabel>ids_type</fieldForLabel>
+      <fieldForValue>ids_type</fieldForValue>
+      <search>
+        <query>| `cim_ids_types`</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Intrusion sourcetypes over time</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats_prestats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by sourcetype _time | `drop_intrustion_dm` | timechart count by sourcetype</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Intrusion sourcetype breakdown</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by sourcetype | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Intrusion sourcetypes by type</title>
+      <table>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by sourcetype IDS_Attacks.ids_type | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+</form>

@@ -1,0 +1,55 @@
+<form>
+  <label>Attack Search</label>
+  <fieldset submitButton="true">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="ids_type">
+      <label>IDS Types</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <valuePrefix>IDS_Attacks.ids_type="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+      <fieldForLabel>ids_type</fieldForLabel>
+      <fieldForValue>ids_type</fieldForValue>
+      <search>
+        <query>| `cim_ids_types`</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="text" token="signature">
+      <label>Signature</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="category">
+      <label>Category</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="src">
+      <label>Source</label>
+      <default>*</default>
+    </input>
+    <input type="text" token="dest">
+      <label>Destination</label>
+      <default>*</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <event>
+        <search>
+          <query>| from datamodel:Intrusion_Detection.IDS_Attacks | search signature="$signature$" category="$category$" src="$src$" dest="$dest$"</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="list.drilldown">none</option>
+      </event>
+    </panel>
+  </row>
+</form>

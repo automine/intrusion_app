@@ -1,0 +1,128 @@
+<form>
+  <label>Intrusion Overview</label>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="ids_type">
+      <label>IDS Types</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <valuePrefix>IDS_Attacks.ids_type="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+      <fieldForLabel>ids_type</fieldForLabel>
+      <fieldForValue>ids_type</fieldForValue>
+      <search>
+        <query>| `cim_ids_types`</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Attacks by IDS type over time</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats_prestats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by IDS_Attacks.ids_type _time | timechart count by IDS_Attacks.ids_type | `drop_intrustion_dm`</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top attack signatures</title>
+      <table>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by IDS_Attacks.signature | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_signature_profile?form.signature=$row.signature$&amp;form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Attack category breakdown</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by IDS_Attacks.category | `drop_intrustion_dm`</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">all</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_category_profile?form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$&amp;form.category=$click.value$</link>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top attack sources</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by IDS_Attacks.src | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_source_profile?form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$&amp;form.src=$click.value$</link>
+        </drilldown>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top attack destinations</title>
+      <table>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ by IDS_Attacks.dest | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_destination_profile?form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$&amp;form.dest=$row.dest$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>

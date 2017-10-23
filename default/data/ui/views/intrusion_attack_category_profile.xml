@@ -1,0 +1,105 @@
+<form>
+  <label>Attack Category Profile</label>
+  <fieldset submitButton="true">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="ids_type">
+      <label>IDS Types</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <valuePrefix>IDS_Attacks.ids_type="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+      <fieldForLabel>ids_type</fieldForLabel>
+      <fieldForValue>ids_type</fieldForValue>
+      <search>
+        <query>| `cim_ids_types`</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="text" token="category">
+      <label>Category</label>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>$category$ attacks over time</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats_prestats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ IDS_Attacks.category="$category$" by IDS_Attacks.ids_type _time | timechart count | `drop_intrustion_dm`</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top sources attacking using $category$ attacks</title>
+      <table>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ IDS_Attacks.category="$category$" by IDS_Attacks.src | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_search?form.category=$category&amp;form.src=$row.src$&amp;form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top destinations being attacked using $category$ attacks</title>
+      <table>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ IDS_Attacks.category="$category$" by IDS_Attacks.dest | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_search?form.category=$category$&amp;form.dest=$dest&amp;form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top signatures in $category$</title>
+      <chart>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ IDS_Attacks.category="$category$" by IDS_Attacks.signature | `drop_intrustion_dm` | sort 20 - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.drilldown">all</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_search?form.category=$category$&amp;form.signature=$click.value$&amp;form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$</link>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Summary of the last 100 IDS events using $category$ attacks</title>
+      <table>
+        <search>
+          <query>|`intrustion_tstats` count from datamodel=Intrusion_Detection.IDS_Attacks WHERE $ids_type$ IDS_Attacks.category="$category$" by _time IDS_Attacks.src IDS_Attacks.dest IDS_Attacks.category IDS_Attacks.signature span=1s | `drop_intrustion_dm` | sort 100 - _time</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">row</option>
+        <drilldown>
+          <link target="_blank">/app/intrusion_app/intrusion_attack_search?form.src=$row.src$&amp;form.dest=$row.dest$&amp;form.category=$row.category$&amp;form.signature=$row.signature$&amp;form.field1.earliest=$earliest$&amp;form.field1.latest=$latest$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+</form>
