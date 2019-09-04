@@ -1,5 +1,8 @@
 # Intrusion App for Splunk
 
+## Deprecation Warning!!!
+__This app has been deprecated. There will be no new development or bug fixes. It has been replaced by the [Aplura Intrusion App for Splunk](https://splunkbase.splunk.com/app/4225/).__
+
 ## Overview
 Many organizations is IDS/IPS devices and software as their first line of defense against attackers. This app provides Splunk dashboards, forms, and reports which can be used to explore your IDS events across your different sourcetypes.
 
@@ -44,7 +47,7 @@ This app depends on data models included in the Splunk Common Information Model 
 
 The Splunk Common Information Model Add-on can be downloaded from [Splunkbase](https://apps.splunk.com/app/1621/).
 
-This app has been tested with versions 4.9 of the CIM add-on. 
+This app has been tested with versions 4.9 of the CIM add-on.
 
 ### Data model Acceleration on the Intrusion data model
 In order to make the app respond and load quickly, accelerated data models are used to provide summary data. For this data to be available, the `Intrusion Detection` data model must be accelerated. Information on how to enable acceleration for the `Intrusion Detection` data model can be found [here](http://docs.splunk.com/Documentation/Splunk/latest/Knowledge/Managedatamodels#Enable_data_model_acceleration). The data model must be accelerated for the length of time for which you would like to see reporting.
@@ -81,6 +84,9 @@ Need help? Use the Splunk community resources! I can be found on many of them:
 This app was created by David Shpritz of [Aplura, LLC.](http://www.aplura.com/)
 
 ## Release history
+
+### v1.2
+* Added deprecation warning and link to replacement.
 
 ### v1.1
 Removed stray stanza in app.conf
